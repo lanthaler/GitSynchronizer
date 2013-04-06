@@ -152,7 +152,8 @@ class GitSynchronizer extends Application
      *
      * @param \Exception $exception The URL of the repository to synchronize
      */
-    public function errorHandler(\Exception $exception) {
+    public function errorHandler(\Exception $exception)
+    {
         if ($exception instanceof Exception) {
             return new Response($exception->getPublicMessage());
         } else {
