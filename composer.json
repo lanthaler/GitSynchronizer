@@ -1,0 +1,29 @@
+{
+    "name": "ml/git-synchronizer",
+    "type": "library",
+    "description": "Keeps directories synchronized to GitHub repositories",
+    "keywords": [ "GIT", "GitHub", "deploy", "synchronize" ],
+    "homepage": "http://www.markus-lanthaler.com",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Markus Lanthaler",
+            "email": "mail@markus-lanthaler.com",
+            "homepage": "http://www.markus-lanthaler.com",
+            "role": "Developer"
+        }
+    ],
+    "require": {
+        "php": ">=5.3.0",
+        "silex/silex": "1.0.*@dev",
+        "symfony/process": "~2",
+        "psr/log": "~1.0"
+    },
+    "suggest": {
+        "monolog/monolog": "Monolog allows logging the application flow"
+    },
+    "autoload": {
+        "psr-0": { "ML\\GitSynchronizer": "" }
+    },
+    "target-dir": "ML/GitSynchronizer"
+}
