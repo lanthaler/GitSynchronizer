@@ -73,11 +73,7 @@ class GitSynchronizer extends Application
      */
     public function handleSynchronizationRequest(Request $request, $token = null)
     {
-        if ('json' !== $request->getContentType()) {
-            throw new Exception(415, 'Only JSON data is supported');
-        }
-
-        $data = json_decode($request->getContent(), false);
+        $data = json_decode($request->get('payload'), false);
 
         if (JSON_ERROR_NONE !== json_last_error()) {
             throw new Exception(400, 'The JSON data cannot be parsed');
