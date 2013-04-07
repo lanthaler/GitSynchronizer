@@ -82,7 +82,7 @@ class GitSynchronizer extends Application
         }
 
         if (false === $this->synchronize($data->repository->url, $token)) {
-            throw new Exception(500, 'Internal error', $repository);
+            throw new Exception(500, 'Internal error', $data->repository->url);
         }
 
         return new Response('', 204);
@@ -106,7 +106,6 @@ class GitSynchronizer extends Application
         $repo = $this['repositories'][$repository];
         $reqToken = (is_object($repo) && isset($repo['token'])) ? $repo['token'] : $this['token'];
         $directory = (is_object($repo)) ? $repo['path'] : $repo;
-        $directory .= '/.git';
 
         if (false === is_dir($directory)) {
             throw new Exception(500, 'Configuration error', $repository);
