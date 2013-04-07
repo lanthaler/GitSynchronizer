@@ -54,7 +54,7 @@ class GitSynchronizer extends Application
         $numRepos = 0;
 
         if (isset($this['repositories']) &&
-            (1 === ($numRepos = count(get_object_vars($this['repositories']))))) {
+            (1 === ($numRepos = count($this['repositories'])))) {
             $message .= '1 repository.';
         } else {
             $message .= $numRepos . ' repositories.';
@@ -103,13 +103,13 @@ class GitSynchronizer extends Application
     {
         $this->log(LogLevel::INFO, 'Synchronization request for ' . $repository);
 
-        if (false === isset($this['repositories']->{$repository})) {
+        if (false === isset($this['repositories'][$repository])) {
             throw new Exception(400, 'The repository has not been registered', $repository);
         }
 
-        $repo = $this['repositories']->{$repository};
-        $reqToken = (is_object($repo) && isset($repo->token)) ? $repo->token : $this['token'];
-        $directory = (is_object($repo)) ? $repo->path : $repo;
+        $repo = $this['repositories'][$repository];
+        $reqToken = (is_object($repo) && isset($repo['token'])) ? $repo['token'] : $this['token'];
+        $directory = (is_object($repo)) ? $repo['path'] : $repo;
         $directory .= '/.git';
 
         if (false === is_dir($directory)) {
