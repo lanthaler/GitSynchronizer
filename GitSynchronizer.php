@@ -116,7 +116,8 @@ class GitSynchronizer extends Application
             throw new Exception(401, 'Wrong token, got "' . $token . '"', $repository);
         }
 
-        $process = new Process("git --git-dir $directory pull");
+        $process = new Process("git pull");
+        $process->setWorkingDirectory($directory);
         $process->setTimeout(120);
         $process->run();
 
