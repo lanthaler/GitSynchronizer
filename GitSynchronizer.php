@@ -93,7 +93,9 @@ class GitSynchronizer extends Application
      *
      * @param string $reposity The URL of the repository to synchronize
      *
-     * @return boolean Returns true on success, false on failure.
+     * @return boolean Returns true on success, false on failure. Please
+     *                 note that post-sync-commands do not affect the return
+     *                 value.
      */
     public function synchronize($repository, $token)
     {
@@ -106,6 +108,7 @@ class GitSynchronizer extends Application
         $repo = $this['repositories'][$repository];
         $reqToken = (is_array($repo) && isset($repo['token'])) ? $repo['token'] : $this['token'];
         $directory = (is_array($repo)) ? $repo['path'] : $repo;
+        $postSyncCommands = (is_array($repo) && isset($repo['post-sync-command'])) ? $repo['post-sync-command'] : array();
 
         if (false === is_dir($directory)) {
             throw new Exception(500, 'Configuration error', $repository);
@@ -120,6 +123,8 @@ class GitSynchronizer extends Application
         $process->setTimeout(120);
         $process->run();
 
+        $success = false;
+
         if ($process->isSuccessful()) {
             $this->log(
                 LogLevel::NOTICE,
@@ -127,7 +132,7 @@ class GitSynchronizer extends Application
                 array('output' => $process->getOutput())
             );
 
-            return true;
+            $success = true;
         } else {
             $this->log(
                 LogLevel::ERROR,
@@ -138,9 +143,38 @@ class GitSynchronizer extends Application
                     'output' => $process->getErrorOutput()
                 )
             );
-
-            return false;
         }
+
+        foreach ($postSyncCommands as $cmd) {
+            $process = new Process($cmd);
+            $process->setWorkingDirectory($directory);
+            $process->setTimeout(180);
+            $process->run();
+
+            if ($process->isSuccessful()) {
+                $this->log(
+                    LogLevel::NOTICE,
+                    'Successfully executed post-sync-command',
+                    array(
+                        'repository' => $repository,
+                        'cmd' => $cmd,
+                        'output' => $process->getOutput()
+                    )
+                );
+            } else {
+                $this->log(
+                    LogLevel::ERROR,
+                    'Executing post-sync-command failed',
+                    array(
+                        'repository' => $repository,
+                        'cmd' => $cmd,
+                        'output' => $process->getErrorOutput()
+                    )
+                );
+            }
+        }
+
+        return $success;
     }
 
     /**
