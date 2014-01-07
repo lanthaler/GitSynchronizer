@@ -104,8 +104,8 @@ class GitSynchronizer extends Application
         }
 
         $repo = $this['repositories'][$repository];
-        $reqToken = (is_object($repo) && isset($repo['token'])) ? $repo['token'] : $this['token'];
-        $directory = (is_object($repo)) ? $repo['path'] : $repo;
+        $reqToken = (is_array($repo) && isset($repo['token'])) ? $repo['token'] : $this['token'];
+        $directory = (is_array($repo)) ? $repo['path'] : $repo;
 
         if (false === is_dir($directory)) {
             throw new Exception(500, 'Configuration error', $repository);
@@ -131,7 +131,7 @@ class GitSynchronizer extends Application
         } else {
             $this->log(
                 LogLevel::ERROR,
-                'Git pull failed.',
+                'Git pull failed',
                 array(
                     'repository' => $repository,
                     'directory' => $directory,
