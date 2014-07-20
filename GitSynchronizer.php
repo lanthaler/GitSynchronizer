@@ -172,7 +172,7 @@ class GitSynchronizer extends Application
             if ($process->isSuccessful()) {
                 $this->log(
                     LogLevel::NOTICE,
-                    'Successfully executed post-sync-command',
+                    'Successfully executed pre/post-sync-command',
                     array(
                         'repository' => $repository,
                         'cmd' => $cmd,
@@ -182,7 +182,7 @@ class GitSynchronizer extends Application
             } else {
                 $this->log(
                     LogLevel::ERROR,
-                    'Executing post-sync-command failed',
+                    'Executing pre/post-sync-command failed',
                     array(
                         'repository' => $repository,
                         'cmd' => $cmd,
