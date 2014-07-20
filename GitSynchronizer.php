@@ -108,6 +108,7 @@ class GitSynchronizer extends Application
         $repo = $this['repositories'][$repository];
         $reqToken = (is_array($repo) && isset($repo['token'])) ? $repo['token'] : $this['token'];
         $directory = (is_array($repo)) ? $repo['path'] : $repo;
+        $preSyncCommands = (is_array($repo) && isset($repo['pre-sync-command'])) ? $repo['pre-sync-command'] : array();
         $postSyncCommands = (is_array($repo) && isset($repo['post-sync-command'])) ? $repo['post-sync-command'] : array();
 
         if (false === is_dir($directory)) {
@@ -117,6 +118,8 @@ class GitSynchronizer extends Application
         if ($token !== $reqToken) {
             throw new Exception(401, 'Wrong token, got "' . $token . '"', $repository);
         }
+
+        $this->runCommands($preSyncCommands, $repository);
 
         $process = new Process("git pull");
         $process->setWorkingDirectory($directory);
@@ -145,7 +148,22 @@ class GitSynchronizer extends Application
             );
         }
 
-        foreach ($postSyncCommands as $cmd) {
+        $this->runCommands($postSyncCommands, $repository);
+
+        return $success;
+    }
+
+    /**
+     * Runs pre/post-sync commands in the context of the specified repository
+     *
+     * @param string $reposity The URL of the repository
+     */
+    protected function runCommands($commands, $repository)
+    {
+        $repo = $this['repositories'][$repository];
+        $directory = (is_array($repo)) ? $repo['path'] : $repo;
+
+        foreach ($commands as $cmd) {
             $process = new Process($cmd);
             $process->setWorkingDirectory($directory);
             $process->setTimeout(180);
@@ -173,8 +191,6 @@ class GitSynchronizer extends Application
                 );
             }
         }
-
-        return $success;
     }
 
     /**
